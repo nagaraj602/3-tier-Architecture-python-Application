@@ -91,22 +91,27 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **Subnet 2:**
+
   Subnet name: **Public-Web-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.2.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 3:**
+
   Subnet name: **Private-App-subnet-A** \>\> Availability zone: **us-east-1a** \>\> IPv4 subnet CIDR block: 192.168.11.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 4:**
+
   Subnet name: **Private-App-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.12.0/24 \>\> Create Subnet.
 
 
   **Subnet 5:**
+
   Subnet name: **Private-Db-subnet-A** \>\> Availability zone: **us-east-1a** \>\> IPv4 subnet CIDR block: 192.168.21.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 6:**
+
   Subnet name: **Private-Db-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.22.0/24 \>\> Create Subnet.
 
 
@@ -118,10 +123,12 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **Public-Web-subnet-A:**
+
   Go to VPC \>\> Subnets \>\> Public-Web-subnet-A \>\> Actions \>\> Edit subnet settings \>\> Auto-assign IP settings: Enable \>\> Save.
 
 
   **Public-Web-subnet-B:**
+
   Go to VPC \>\> Subnets \>\> Public-Web-subnet-B \>\> Actions \>\> Edit subnet settings \>\> Auto-assign IP settings: Enable \>\> Save.
 
 
@@ -138,10 +145,12 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **NAT-A:**
+
   Go to VPC \>\> NAT gateways \>\> Create NAT gateway \>\> Name: **NAT-A** \>\> Availability mode: **Zonal** \>\> Subnet: **Public-Web-subnet-A** \>\> Connectivity Type: Public \>\> Elastic IP allocation ID: Click on **Allocate Elastic IP** \>\> Create NAT gateway. (takes time to be up and running)
 
 
   **NAT-B:**
+
   Go to VPC \>\> NAT gateways \>\> Create NAT gateway \>\> Name: **NAT-B** \>\> Availability mode: **Zonal** \>\> Subnet: **Public-Web-subnet-B** \>\> Connectivity Type: Public \>\> Elastic IP allocation ID: Click on **Allocate Elastic IP** \>\> Create NAT gateway. (takes time to be up and running)
 
 
@@ -153,20 +162,24 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
 
 
   **Public Route table:**
+
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Public-RT**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: Internet Gateway \>\> Select the Internet gateway ID: **3-tier-igw** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Public-Web-subnet-A**", "**Public-Web-subnet-B**" \>\> Save associations.
 
 
-  **Private Route table App-RT-A:**
+  **Private** **Route table App-RT-A:**
+
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-App-RT-A**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: NAT Gateway \>\> Select the NAT gateway ID: **NAT-A** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-App-subnet-A**" \>\> Save associations.
 
 
   
 
-  **Private Route table App-RT-B:**
+  **Private** **Route table App-RT-B:**
+
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-App-RT-B**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: NAT Gateway \>\> Select the NAT gateway ID: **NAT-B** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-App-subnet-B**" \>\> Save associations.
 
 
-  **Private DB Route table:**
+  **Private** **DB Route table:**
+
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-DB-RT**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> No Routes attached here \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-Db-subnet-A**"**,** "**Private-Db-subnet-B**" \>\> Save associations.
 
 
@@ -178,18 +191,22 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
 
 
   **ALB-SG:** 
+
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **ALB-SG** \>\> Description: **ALB-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: HTTP \>\> Source Type: Anywhere-IPv4 \>\> Create Security Group.
 
 
   **APP-SG:** 
+
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **APP-SG** \>\> Description: **APP-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: Custom TCP \>\> Port: 9051 \>\> Source Type: custom \>\> Source: **ALB-SG** \>\> Create Security Group.
 
 
   **DB-SG:** 
+
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **DB-SG** \>\> Description: **DB-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: MYSQL/Aurora \>\> Source Type: custom \>\> Source: **APP-SG** \>\> Create Security Group.
 
 
   **SSM-SG:**
+
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **SSM-SG** \>\> Description: **SSM-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: HTTPS \>\> Source Type: custom \>\> Source: **APP-SG** \>\> Create Security Group.
 
 
@@ -209,6 +226,7 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
 
 
   **ssm-Endpoint:**
+
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ssm-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ssm, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ssm \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
@@ -216,6 +234,7 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   
 
   **ssmmessages-Endpoint:**
+
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ssmmessages-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ssmmessages, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ssmmessages \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
@@ -223,6 +242,7 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   
 
   **ec2messages-Endpoint:**
+
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ec2messages-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ec2messages, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ec2messages \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
@@ -232,7 +252,8 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   
 
 
-# Database Subnet Group Creation: Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: **database-subnet-group** \>\> Description: **3tier-database-subnet-group** \>\> VPC: **3-tier VPC** \>\> Add subnets \>\> Subnets \>\> Select subnets from drop down: "**Private-Db-subnet-A**", "**Private-Db-subnet-B**" \>\> Create.
+# Database Subnet Group Creation: 
+Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: **database-subnet-group** \>\> Description: **3tier-database-subnet-group** \>\> VPC: **3-tier VPC** \>\> Add subnets \>\> Subnets \>\> Select subnets from drop down: "**Private-Db-subnet-A**", "**Private-Db-subnet-B**" \>\> Create.
 
 
   **Note:** Although the database is deployed as a Single-AZ instance in us-east-1a, the DB subnet group includes both Private-Db-subnet-A and Private-Db-subnet-B.
@@ -241,10 +262,11 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
 
 
 
-# Amazon RDS MySQL Creation: Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
-- [ ] Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
-- [ ] Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
-- [ ] Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
+# Amazon RDS MySQL Creation: 
+Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
+    - [ ] Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
+    - [ ] Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
+    - [ ] Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
 
 ![][image3]  
 (Usually in company we need to select either production template or Dev/Test template, so that we can select database instances according to our need)
@@ -309,7 +331,8 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   
 
 
-# Creating Application EC2 Instance: Here we will add all the packages and applications and then we will create AMI for the launch template.
+# Creating Application EC2 Instance: 
+Here we will add all the packages and applications and then we will create AMI for the launch template.
 
 
   Go to EC2 \>\> Launch instance \>\> Name: **Application EC2** \>\> AMI: Amazon linux 2023 \>\> Instance type: t3.micro \>\> Key pair name: Proceed without a key pair \>\> Network settings \>\> Edit \>\> VPC: **3-tier VPC** \>\> Subnet: **Private-App-subnet-A** \>\> Firewall (security groups): Select existing Security Group: **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Launch instance.
@@ -425,19 +448,22 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   
 
 
-# Create AMI: Go to Ec2 \>\> Select the private instance you created: **Application Ec2** \>\> Actions \>\> Image and templates \>\> Create image \>\> Image name: **3tier-app-ami** \>\> Create image.
+# Create AMI: 
+Go to Ec2 \>\> Select the private instance you created: **Application Ec2** \>\> Actions \>\> Image and templates \>\> Create image \>\> Image name: **3tier-app-ami** \>\> Create image.
 
 
   
 
 
-# Create Launch Template Go to EC2 \>\> Launch templates \>\> Create launch template \>\> Launch template name: **3-tier-launch-template** \>\> AMI \>\> My AMIs \>\> **3tier-app-ami** \>\> Instance type: t3.micro \>\> Key pair: Don't include in launch template \>\> Security Group: Select Existing Security Group \>\> **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Create Launch templates.
+# Create Launch Template 
+Go to EC2 \>\> Launch templates \>\> Create launch template \>\> Launch template name: **3-tier-launch-template** \>\> AMI \>\> My AMIs \>\> **3tier-app-ami** \>\> Instance type: t3.micro \>\> Key pair: Don't include in launch template \>\> Security Group: Select Existing Security Group \>\> **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Create Launch templates.
 
 
   
 
 
-# Create Target Group Go to EC2 \>\> Target groups \>\> Create target group \>\> Target type: Instances \>\> Target group name: **3-tier-target-group** \>\> Protocol: HTTP \>\> Port: 9051 \>\> IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Protocol version: HTTP1 \>\> Health checks \>\> Health check protocol: HTTP \>\>  Health check path: / \>\> Next \>\> Scroll down \>\> Next \>\> Create target group.
+# Create Target Group 
+Go to EC2 \>\> Target groups \>\> Create target group \>\> Target type: Instances \>\> Target group name: **3-tier-target-group** \>\> Protocol: HTTP \>\> Port: 9051 \>\> IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Protocol version: HTTP1 \>\> Health checks \>\> Health check protocol: HTTP \>\>  Health check path: / \>\> Next \>\> Scroll down \>\> Next \>\> Create target group.
 
 
   
@@ -457,7 +483,8 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
 
 
 
-# Create Auto Scaling Group:  Go to EC2 \>\> Scroll down side bar \>\> Auto scaling groups \>\> Create Auto scaling group \>\> Auto Scaling group name: **3-tier-ASG** \>\> Launch Template: **3-tier-launch-template** \>\> Version: Latest \>\> Next \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: **Private-App-subnet-A**  and **Private-App-subnet-B** \>\> Next \>\> Select Load balancing options: Attach to an existing load balancer \>\> Select the load balancers to attach: **3-tier-target-group** \>\> Select VPC Lattice service to attach: No VPC Lattice service \>\> Health checks \>\> Additional health check types \- optional \>\> Turn on Elastic Load Balancing health checks: Enable \>\> Health check grace period: 300 Seconds \>\> Next \>\> Desired capacity: 2 \>\> Scaling \>\> Min desired capacity: 2 \>\> Max desired capacity: 4 \>\> Automatic scaling: Target tracking scaling policy \>\> Scaling policy name: **Target Tracking Policy** \>\> Metric type: Application Load balancer request count per target \>\> Target group: 3-tier-target-group \>\> Target value: 60 \>\> Instance warmup: 300 Seconds \>\> Scroll down \>\> Next \>\> Next \>\> Next \>\> Create Auto Scaling group.
+# Create Auto Scaling Group:  
+Go to EC2 \>\> Scroll down side bar \>\> Auto scaling groups \>\> Create Auto scaling group \>\> Auto Scaling group name: **3-tier-ASG** \>\> Launch Template: **3-tier-launch-template** \>\> Version: Latest \>\> Next \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: **Private-App-subnet-A**  and **Private-App-subnet-B** \>\> Next \>\> Select Load balancing options: Attach to an existing load balancer \>\> Select the load balancers to attach: **3-tier-target-group** \>\> Select VPC Lattice service to attach: No VPC Lattice service \>\> Health checks \>\> Additional health check types \- optional \>\> Turn on Elastic Load Balancing health checks: Enable \>\> Health check grace period: 300 Seconds \>\> Next \>\> Desired capacity: 2 \>\> Scaling \>\> Min desired capacity: 2 \>\> Max desired capacity: 4 \>\> Automatic scaling: Target tracking scaling policy \>\> Scaling policy name: **Target Tracking Policy** \>\> Metric type: Application Load balancer request count per target \>\> Target group: 3-tier-target-group \>\> Target value: 60 \>\> Instance warmup: 300 Seconds \>\> Scroll down \>\> Next \>\> Next \>\> Next \>\> Create Auto Scaling group.
 
 
   
@@ -479,5 +506,4 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
 ![][image8]  
 ![][image9]  
 ![][image10]  
-
 
