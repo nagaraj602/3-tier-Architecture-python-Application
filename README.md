@@ -246,10 +246,9 @@ Creating VPC endpoints for SSM. This allows Session manager without ssh. Creatin
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ec2messages-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ec2messages, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ec2messages \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
-  ![][image2]
-
 
   
+<img width="2430" height="1174" alt="Screenshot 2026-06-13 214651" src="https://github.com/user-attachments/assets/5c50616a-e7c1-46b9-9be0-b9f761208991" />
 
 
 # Database Subnet Group Creation: 
@@ -264,11 +263,12 @@ Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: *
 
 # Amazon RDS MySQL Creation: 
 Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
-    - [ ] Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
-    - [ ] Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
-    - [ ] Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
+    - Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
+    - Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
+    - Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
 
-![][image3]  
+<img width="1278" height="624" alt="Screenshot 2026-06-13 222110" src="https://github.com/user-attachments/assets/7c3caed8-0822-44f6-acc8-0a2d8951ddac" />
+
 (Usually in company we need to select either production template or Dev/Test template, so that we can select database instances according to our need)
 
 \>\> Currently I will select **Free tier Template** \>\> Deployment option: Single-AZ DB instance deployment (1 instance) \>\> Engine Version: MySQL 8.4.8 \>\> DB instance identifier: **usernotes** \>\> Credentials Settings \>\> Master username: admin \>\> Credentials management: Self managed \>\> Master password: ASoYRxsAI9snyjZZWjG6 \>\> Confirm master password: ASoYRxsAI9snyjZZWjG6 \>\> Database authentication options: Password authentication \>\> **Instance configuration** \>\> DB instance class \>\> Select **Burstable classes (includes t classes)** \>\> Instance type: db.t3.micro \>\> Storage type: General Purpose SSD (gp3) \>\> Allocated storage: 20 GiB \>\> Connectivity \>\> Compute resource \>\> Select **Don’t connect to an EC2 compute resource** \>\> VPC: **3-tier VPC** \>\> DB subnet group: **database-subnet-group** \>\> Public access: No \>\> VPC security group (firewall): Choose Existing \>\> Existing VPC security groups: Select **DB-SG** \>\> Availability Zone: us-east-1a \>\> Create database. (Takes few minutes to create)
@@ -277,8 +277,8 @@ Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration
 **Master password**: ASoYRxsAI9snyjZZWjG6  
 **Endpoint**: usernotes.cu9e4agaow6j.us-east-1.rds.amazonaws.com
 
-* **Read Replica database (optional)**: Not created in this implementation.
-
+# Read Replica database (optional): 
+Not created in this implementation.
   In production environments, a read replica can be created in another Availability Zone to offload read traffic from the primary database. 
 
 
@@ -290,7 +290,8 @@ Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration
   Go to Secret manager \>\> Store a new secret \>\> Secret Type: Credentials for Amazon RDS database \>\> Credentials \>\> Username: admin \>\> Password: ASoYRxsAI9snyjZZWjG6 \>\> Encryption key: aws/secretsmanager \>\> Database: Select **usernotes**  \>\> Next \>\> Secret name: **usernotes-rds-secret** \>\> Next \>\> Configure automatic rotation: **Keep it disabled** \>\> Next \>\> Scroll down \>\> Store.
 
 
-  Once secret is created, copy the ARN of it: **arn:aws:secretsmanager:us-east-1:544917027663:secret:usernotes-rds-secret-XGn3hP**
+  Once secret is created, copy the ARN of it: 
+  **arn:aws:secretsmanager:us-east-1:544917027663:secret:usernotes-rds-secret-XGn3hP**
 
 
   
@@ -299,31 +300,31 @@ Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration
 
   Go to IAM \>\> Roles \>\> Select The role: **EC2-SSM-Role** \>\> Add Permissions \>\> Create inline policy \>\> Json \>\> Paste this:
 
-
+```bash
   {
 
     "Version": "2012-10-17",
 
-    "Statement": \[
+    "Statement": [
 
       {
 
         "Effect": "Allow",
 
-        "Action": \[
+        "Action": [
 
           "secretsmanager:GetSecretValue"
 
-        \],
+        ],
 
         "Resource": "arn:aws:secretsmanager:us-east-1:544917027663:secret:usernotes-rds-secret-XGn3hP"
 
       }
 
-    \]
+    ]
 
   }
-
+```
 
   \>\> Next \>\> Policy Name: **SecretsManagerRead** \>\> Create policy.
 
@@ -343,16 +344,18 @@ Here we will add all the packages and applications and then we will create AMI f
 
   Install following packages:
 
-- sudo dnf update \-y  
-- sudo dnf install mariadb105 \-y   
-- sudo dnf install git python3 python3-pip \-y  
-- sudo pip3 install flask pymysql boto3
-
+```bash 
+sudo dnf update -y
+sudo dnf install mariadb105 -y   
+sudo dnf install git python3 python3-pip -y  
+sudo pip3 install flask pymysql boto3
+```
 
   Connect to RDS:
 
-- mysql \-h usernotes.cu9e4agaow6j.us-east-1.rds.amazonaws.com \-u admin \-p
-
+```bash
+mysql -h usernotes.cu9e4agaow6j.us-east-1.rds.amazonaws.com -u admin -p
+```
 
   (**Syntax**: mysql \-h \<database-host-name\> \-u \<database-username\> \-p)
 
@@ -365,85 +368,74 @@ Here we will add all the packages and applications and then we will create AMI f
 
   Create database: (Run below commands)
 
-- CREATE DATABASE usernotes;  
-- USE usernotes;
-
+```bash
+CREATE DATABASE usernotes;  
+USE usernotes;
+```
 
   Create table: (Run below command at one)
 
-- 
+```bash
+CREATE TABLE notes (
+  id INT AUTO\_INCREMENT PRIMARY KEY,
+  username VARCHAR(100),
+  note TEXT,
+  created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+);
+```
 
-
-  CREATE TABLE notes (
-
-      id INT AUTO\_INCREMENT PRIMARY KEY,
-
-      username VARCHAR(100),
-
-      note TEXT,
-
-      created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
-
-  );
-
-
-- exit
-
+```bash
+exit
+```
   After exiting from the database, follow the next steps below.
 
 
 
 # Running the Application 
 
+```bash
+sudo su ec2-user  
+cd  
+git clone https://github.com/nagaraj602/3-tier-Architecture-python-Application.git  
+cd 3-tier-Architecture-python-Application  
+pip3 install -r requirements.txt  
+sudo python3 app.py
+```
+<img width="1388" height="296" alt="Screenshot 2026-06-13 235942" src="https://github.com/user-attachments/assets/da96aea0-340c-452b-a415-144f90b15942" />
 
-- sudo su ec2-user  
-- cd  
-- git clone https://github.com/nagaraj602/3-tier-Architecture-python-Application.git  
-- cd 3-tier-Architecture-python-Application  
-- pip3 install \-r requirements.txt  
-- sudo python3 app.py   
-  ![][image4]
 
   Currently you cannot access the application via browser as the application will be running in a private subnet. It will work when we connect to the ALB.  
     
   To make the application run during boot, we will create service file:  
-- sudo vi /etc/systemd/system/usernotes.service
-
+```bash
+sudo vi /etc/systemd/system/usernotes.service
+```
 
   
+```bash
+[Unit]
+Description=User Notes Flask Application
+After=network.target
 
-  \[Unit\]
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/app
+ExecStart=/usr/bin/python3 /home/ec2-user/app/app.py
+Restart=always
+RestartSec=5
 
-  Description=User Notes Flask Application
-
-  After=network.target
-
-
-  \[Service\]
-
-  User=ec2-user
-
-  WorkingDirectory=/home/ec2-user/app
-
-  ExecStart=/usr/bin/python3 /home/ec2-user/app/app.py
-
-  Restart=always
-
-  RestartSec=5
-
-
-  \[Install\]
-
-  WantedBy=multi-user.target
-
+[Install]
+WantedBy=multi-user.target
+```
 
   
 
 - :wq  
-- sudo systemctl daemon-reload  
-- sudo systemctl enable usernotes  
-- sudo systemctl start usernotes
-
+```bash
+sudo systemctl daemon-reload  
+sudo systemctl enable usernotes  
+sudo systemctl start usernotes
+```
 
   
 
@@ -489,21 +481,24 @@ Go to EC2 \>\> Scroll down side bar \>\> Auto scaling groups \>\> Create Auto sc
 
   
 
-* **Health check in target group:** Go to Target groups and check if you see healthy instances. If not, find the root cause.
+# Health check in target group
+Go to Target groups and check if you see healthy instances. If not, find the root cause.
 
 
   
 
-* **Cloudfront Setup**: Go to cloudfront \>\> Create distribution \>\> Choose plan: Free \>\> Next \>\> Distribution name: **3-tier-Cloudfront** \>\> Distribution type: Single website or app \>\> Next \>\> Origin type: Elastic Load balancer \>\> Elastic Load Balancing origin \>\> Browse load balancer: **3-tier-ALB** \>\> Choose \>\> Settings \>\> Origin settings \>\> Customize settings \>\> Protocol: HTTP only \>\> HTTP port: 80 \>\>  Scroll down \>\> Next \>\> Enabled security \>\> Web Application Firewall (WAF) \>\> Use monitor mode: Enable \>\> Rate limiting: Enable \>\> Next \>\> Create distribution.  (WAF is enabled by default here)
+# Cloudfront Setup
+Go to cloudfront \>\> Create distribution \>\> Choose plan: Free \>\> Next \>\> Distribution name: **3-tier-Cloudfront** \>\> Distribution type: Single website or app \>\> Next \>\> Origin type: Elastic Load balancer \>\> Elastic Load Balancing origin \>\> Browse load balancer: **3-tier-ALB** \>\> Choose \>\> Settings \>\> Origin settings \>\> Customize settings \>\> Protocol: HTTP only \>\> HTTP port: 80 \>\>  Scroll down \>\> Next \>\> Enabled security \>\> Web Application Firewall (WAF) \>\> Use monitor mode: Enable \>\> Rate limiting: Enable \>\> Next \>\> Create distribution.  (WAF is enabled by default here)
 
 
   URL: [http://d20b1uc1sfqpos.cloudfront.net](http://d20b1uc1sfqpos.cloudfront.net)  
 
 
-![][image5]  
-![][image6]  
-![][image7]  
-![][image8]  
-![][image9]  
-![][image10]  
+<img width="1332" height="1346" alt="Screenshot 2026-06-14 152144" src="https://github.com/user-attachments/assets/c9bd28a0-744c-41e5-bd7a-1bf89762a7e3" />
+<img width="1346" height="1230" alt="Screenshot 2026-06-14 152126" src="https://github.com/user-attachments/assets/7eda3789-5e47-40fc-8ec2-d14c85412623" />
+<img width="1324" height="1176" alt="Screenshot 2026-06-14 152104" src="https://github.com/user-attachments/assets/0712c351-721b-4cfe-bd48-d0dffc6783a9" />
+<img width="1374" height="1138" alt="Screenshot 2026-06-14 152045" src="https://github.com/user-attachments/assets/d9408f8a-d30e-4009-9d62-a3ee9c407ebf" />
+<img width="1370" height="1188" alt="Screenshot 2026-06-14 152003" src="https://github.com/user-attachments/assets/cc403328-a4d3-4587-9327-3b425a588b12" />
+<img width="1326" height="806" alt="Screenshot 2026-06-14 151935" src="https://github.com/user-attachments/assets/43e7e86b-ebd0-4d29-a97d-9265145e0b6c" />
+ 
 
