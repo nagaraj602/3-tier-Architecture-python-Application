@@ -262,10 +262,7 @@ Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: *
 
 
 # Amazon RDS MySQL Creation: 
-Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
-    - Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
-    - Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
-    - Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
+Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options as you can see in the below screenshot:
 
 <img width="1278" height="624" alt="Screenshot 2026-06-13 222110" src="https://github.com/user-attachments/assets/7c3caed8-0822-44f6-acc8-0a2d8951ddac" />
 
