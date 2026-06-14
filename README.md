@@ -34,24 +34,24 @@ This document provides a complete step-by-step implementation of a production-st
                        Application Load Balancer (ALB)  
                                       |  
             +-------------------------------------------------+  
-            |                                              |  
-            |                                              |  
+            |                                                |  
+            |                                                |  
      Public-Web-Subnet-A                            Public-Web-Subnet-B  
       (us-east-1a)                                   	(us-east-1b)  
-            |                                               	|  
+            |                                               |  
        NAT Gateway A                                  NAT Gateway B  
             |                                              |  
-            +-------------------------------------------------+  
+            +----------------------------------------------+  
                             		|  
                             		|  
-        +-------------------------------------------------------- 
+        +---------------------------------------------------+
         |                                                  	|  
         |                                                  	|  
  Private-App-Subnet-A                              Private-App-Subnet-B  
     (us-east-1a)                                      	(us-east-1b)  
         |                                                  	|  
         |                                                  	|  
-        +-------------- Auto Scaling Group ---------------------+  
+        +-------------- Auto Scaling Group -----------------+  
                             	|  
             +-----------------------------------+  
             |                               		|  
