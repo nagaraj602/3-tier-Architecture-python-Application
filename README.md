@@ -20,7 +20,7 @@ This document provides a complete step-by-step implementation of a production-st
 ## Architecture Diagram
 
 ```text
-#### 3-Tier Architecture with Cloudfront, Load balancer, WAF, Auto scaling, Secret manager, RDS and live application.
+
 
                                Internet Users  
                                       |  
