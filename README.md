@@ -21,8 +21,6 @@ Currently, we are using a simple note-taking application. The application prompt
 
 When a user accesses the application from a different browser or device and enters the same username, the application retrieves and displays all notes previously saved for that user from the database. This demonstrates persistent data storage and retrieval using Amazon RDS.
 
-The application uses port 9051. It was built with python and HTML code.
-
 ---
 
 ## Architecture Diagram
