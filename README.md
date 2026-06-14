@@ -54,10 +54,10 @@ This document provides a complete step-by-step implementation of a production-st
         +-------------- Auto Scaling Group -----------------+  
                             	|  
             +-----------------------------------+  
-            |                               		|  
+            |                               	|  
        EC2 App Server                     EC2 App Server  
           (APP-SG)                          (APP-SG)  
-            |                               		|  
+            |                               	|  
             +-----------------+-----------------+  
                             	|  
                      MySQL Port 3306  
