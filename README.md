@@ -1,6 +1,5 @@
-1. #### 3-Tier Architecture with Cloudfront, Load balancer, WAF, Auto scaling, Secret manager, RDS and live application.
+#### 3-Tier Architecture with Cloudfront, Load balancer, WAF, Auto scaling, Secret manager, RDS and live application.
 
-   ##### **Ans:**
 
      
                                   Internet Users  
