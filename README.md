@@ -157,7 +157,8 @@ This document provides a complete step-by-step implementation of a production-st
   
 
 
-# Route Tables and Subnet Associations: You will need a public route table and 3 private route tables. (1 Public RT for Web subnets, 1 private RT for NAT-A, 1 private RT for NAT-B, and 1 private RT for Db).
+# Route Tables and Subnet Associations: 
+You will need a public route table and 3 private route tables. (1 Public RT for Web subnets, 1 private RT for NAT-A, 1 private RT for NAT-B, and 1 private RT for Db).
 
 
   **Public Route table**
