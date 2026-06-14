@@ -298,29 +298,18 @@ Not created in this implementation.
   Go to IAM \>\> Roles \>\> Select The role: **EC2-SSM-Role** \>\> Add Permissions \>\> Create inline policy \>\> Json \>\> Paste this:
 
 ```bash
-  {
-
-    "Version": "2012-10-17",
-
-    "Statement": [
-
-      {
-
-        "Effect": "Allow",
-
-        "Action": [
-
-          "secretsmanager:GetSecretValue"
-
-        ],
-
-        "Resource": "arn:aws:secretsmanager:us-east-1:544917027663:secret:usernotes-rds-secret-XGn3hP"
-
-      }
-
-    ]
-
-  }
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:544917027663:secret:usernotes-rds-secret-XGn3hP"
+    }
+  ]
+}
 ```
 
   \>\> Next \>\> Policy Name: **SecretsManagerRead** \>\> Create policy.
@@ -398,12 +387,16 @@ cd 3-tier-Architecture-python-Application
 pip3 install -r requirements.txt  
 sudo python3 app.py
 ```
+
+
 <img width="1388" height="296" alt="Screenshot 2026-06-13 235942" src="https://github.com/user-attachments/assets/da96aea0-340c-452b-a415-144f90b15942" />
+
 
 
   Currently you cannot access the application via browser as the application will be running in a private subnet. It will work when we connect to the ALB.  
     
   To make the application run during boot, we will create service file:  
+  
 ```bash
 sudo vi /etc/systemd/system/usernotes.service
 ```
@@ -491,11 +484,16 @@ Go to cloudfront \>\> Create distribution \>\> Choose plan: Free \>\> Next \>\> 
   URL: [http://d20b1uc1sfqpos.cloudfront.net](http://d20b1uc1sfqpos.cloudfront.net)  
 
 
-<img width="1332" height="1346" alt="Screenshot 2026-06-14 152144" src="https://github.com/user-attachments/assets/c9bd28a0-744c-41e5-bd7a-1bf89762a7e3" />
-<img width="1346" height="1230" alt="Screenshot 2026-06-14 152126" src="https://github.com/user-attachments/assets/7eda3789-5e47-40fc-8ec2-d14c85412623" />
-<img width="1324" height="1176" alt="Screenshot 2026-06-14 152104" src="https://github.com/user-attachments/assets/0712c351-721b-4cfe-bd48-d0dffc6783a9" />
-<img width="1374" height="1138" alt="Screenshot 2026-06-14 152045" src="https://github.com/user-attachments/assets/d9408f8a-d30e-4009-9d62-a3ee9c407ebf" />
-<img width="1370" height="1188" alt="Screenshot 2026-06-14 152003" src="https://github.com/user-attachments/assets/cc403328-a4d3-4587-9327-3b425a588b12" />
 <img width="1326" height="806" alt="Screenshot 2026-06-14 151935" src="https://github.com/user-attachments/assets/43e7e86b-ebd0-4d29-a97d-9265145e0b6c" />
+<img width="1370" height="1188" alt="Screenshot 2026-06-14 152003" src="https://github.com/user-attachments/assets/cc403328-a4d3-4587-9327-3b425a588b12" />
+<img width="1374" height="1138" alt="Screenshot 2026-06-14 152045" src="https://github.com/user-attachments/assets/d9408f8a-d30e-4009-9d62-a3ee9c407ebf" />
+<img width="1324" height="1176" alt="Screenshot 2026-06-14 152104" src="https://github.com/user-attachments/assets/0712c351-721b-4cfe-bd48-d0dffc6783a9" />
+<img width="1346" height="1230" alt="Screenshot 2026-06-14 152126" src="https://github.com/user-attachments/assets/7eda3789-5e47-40fc-8ec2-d14c85412623" />
+<img width="1332" height="1346" alt="Screenshot 2026-06-14 152144" src="https://github.com/user-attachments/assets/c9bd28a0-744c-41e5-bd7a-1bf89762a7e3" />
+
+
+
+
+
  
 
