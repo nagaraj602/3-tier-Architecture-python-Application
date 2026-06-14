@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+
+<div class="container mt-4">
+
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Welcome, {{ username }}</h2>
+
+
+        <a href="/logout" class="btn btn-danger">
+            Change User
+        </a>
+    </div>
+
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+
+
+            <form action="/add-note" method="POST">
+
+
+                <div class="mb-3">
+                    <textarea
+                        class="form-control"
+                        name="note"
+                        rows="4"
+                        placeholder="Enter note..."
+                        required></textarea>
+                </div>
+
+
+                <button class="btn btn-success">
+                    Save Note
+                </button>
+
+
+            </form>
+
+
+        </div>
+    </div>
+
+
+    <div class="card shadow">
+        <div class="card-body">
+
+
+            <h4>Your Notes</h4>
+
+
+            {% if notes %}
+
+
+                {% for item in notes %}
+
+
+                <div class="border rounded p-3 mb-2">
+                    <p>{{ item.note }}</p>
+                    <small>{{ item.created_at }}</small>
+                </div>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <div class="alert alert-info">
+                    No Notes Yet
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
