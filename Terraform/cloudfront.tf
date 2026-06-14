@@ -65,8 +65,7 @@ resource "aws_cloudfront_distribution" "three_tier_cf" {
     cloudfront_default_certificate = true
   }
 
-  web_acl_id =
-  aws_wafv2_web_acl.three_tier_waf.arn
+  web_acl_id = aws_wafv2_web_acl.three_tier_waf.arn
 
   depends_on = [
     aws_lb.three_tier_alb

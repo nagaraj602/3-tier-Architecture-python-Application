@@ -49,11 +49,9 @@ resource "aws_autoscaling_policy" "target_tracking" {
 
       predefined_metric_type = "ALBRequestCountPerTarget"
 
-      resource_label =
-      "${aws_lb.three_tier_alb.arn_suffix}/${aws_lb_target_group.three_tier_tg.arn_suffix}"
+      resource_label = "${aws_lb.three_tier_alb.arn_suffix}/${aws_lb_target_group.three_tier_tg.arn_suffix}"
     }
 
     target_value = 60
   }
-}
 }
