@@ -15,6 +15,14 @@ This document provides a complete step-by-step implementation of a production-st
 - NAT Gateways
 - Multi-subnet VPC Design
 
+
+# About the application:
+Currently, we are using a simple note-taking application. The application prompts users to enter a username to log in. After logging in, users can create and save multiple notes, which are stored in the Amazon RDS MySQL database.
+
+When a user accesses the application from a different browser or device and enters the same username, the application retrieves and displays all notes previously saved for that user from the database. This demonstrates persistent data storage and retrieval using Amazon RDS.
+
+The application uses port 9051. It was built with python and HTML code.
+
 ---
 
 ## Architecture Diagram
