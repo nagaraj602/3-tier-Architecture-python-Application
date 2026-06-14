@@ -1,64 +1,90 @@
+# AWS 3-Tier Architecture with CloudFront, WAF, ALB, Auto Scaling, Secrets Manager, RDS and Live Application
+
+## Overview
+
+This document provides a complete step-by-step implementation of a production-style AWS 3-Tier Architecture using:
+
+- Amazon CloudFront
+- AWS WAF
+- Application Load Balancer (ALB)
+- Auto Scaling Group (ASG)
+- Amazon EC2
+- AWS Systems Manager (SSM)
+- AWS Secrets Manager
+- Amazon RDS MySQL
+- NAT Gateways
+- Multi-subnet VPC Design
+
+---
+
+## Architecture Diagram
+
+```text
 #### 3-Tier Architecture with Cloudfront, Load balancer, WAF, Auto scaling, Secret manager, RDS and live application.
 
-
-     
-                                  Internet Users  
-                                         |  
-                                         |  
-                                 Amazon CloudFront  
-                                         |  
-                                         |  
-                           AWS WAF (attached to CloudFront)  
-                                         |  
-                                         |  
-                          Application Load Balancer (ALB)  
-                                         |  
-               \-------------------------------------------------  
-               |                                               	|  
-               |                                               	|  
-        Public-Web-Subnet-A                            Public-Web-Subnet-B  
-         (us-east-1a)                                   	(us-east-1b)  
-               |                                               	|  
-          NAT Gateway A                                  NAT Gateway B  
-               |                                               	|  
-               \-------------------------------------------------  
-                               	|  
-                               	|  
-           \-----------------------------------------------------  
-           |                                                   	|  
-           |                                                   	|  
-    Private-App-Subnet-A                              Private-App-Subnet-B  
-       (us-east-1a)                                      	(us-east-1b)  
-           |                                                   		|  
-           |                                                   		|  
-           \+----------- Auto Scaling Group \---------------------+  
-                               |  
-               \----------------------------------------  
-               |                               		|  
-          EC2 App Server                 EC2 App Server  
-             (APP-SG)                      (APP-SG)  
-               |                               		|  
-               \+-----------------+------------------+  
-                               	|  
-                        MySQL Port 3306  
-                               	|  
-                               	|  
-                  Private-DB-Subnet-A (us-east-1a)  
-                               	|  
-                       Amazon RDS MySQL  
-                       Single-AZ Instance  
-                          (DB-SG)  
-   
+                               Internet Users  
+                                      |  
+                                      |  
+                              Amazon CloudFront  
+                                      |  
+                                      |  
+                        AWS WAF (attached to CloudFront)  
+                                      |  
+                                      |  
+                       Application Load Balancer (ALB)  
+                                      |  
+            \-------------------------------------------------  
+            |                                               	|  
+            |                                               	|  
+     Public-Web-Subnet-A                            Public-Web-Subnet-B  
+      (us-east-1a)                                   	(us-east-1b)  
+            |                                               	|  
+       NAT Gateway A                                  NAT Gateway B  
+            |                                               	|  
+            \-------------------------------------------------  
+                            		|  
+                            		|  
+        \---------------------------------------------------------------  
+        |                                                   		|  
+        |                                                   		|  
+ Private-App-Subnet-A                              Private-App-Subnet-B  
+    (us-east-1a)                                      	(us-east-1b)  
+        |                                                   		|  
+        |                                                   		|  
+        \-------------- Auto Scaling Group \--------------------+  
+                            	|  
+            \----------------------------------------  
+            |                               		|  
+       EC2 App Server                 EC2 App Server  
+          (APP-SG)                      (APP-SG)  
+            |                               		|  
+            \+-----------------+------------------+  
+                            	|  
+                     MySQL Port 3306  
+                            	|  
+                            	|  
+               Private-DB-Subnet-A (us-east-1a)  
+                            	|  
+                    Amazon RDS MySQL  
+                    Single-AZ Instance  
+                       (DB-SG)
 
 ![][image1]
+```
 
-* **VPC creation:** Go to AWS \>\> VPC \>\> Create VPC \>\> VPC only \>\> Name tag: **3-tier VPC** \>\> IPv4 CIDR: **192.168.0.0/16** \>\> Create VPC.
+---
+
+
+# VPC Creation
+ Go to AWS \>\> VPC \>\> Create VPC \>\> VPC only \>\> Name tag: **3-tier VPC** \>\> IPv4 CIDR: **192.168.0.0/16** \>\> Create VPC.
 
 
   Select the VPC you created \>\> Actions \>\> Edit VPC settings \>\> DNS settings \>\> Enable DNS resolution: **Enable** \>\> Enable DNS hostnames: **Enable** \>\> Save.
 
 
-* **Subnet Creation:** Go to VPC \>\> subnets \>\> Create subnets \>\> VPC ID: Select **3-tier VPC** from the drop down \>\> 
+
+# Subnet Creation
+ Go to VPC \>\> subnets \>\> Create subnets \>\> VPC ID: Select **3-tier VPC** from the drop down \>\> 
 
   **Subnet 1**  
   Subnet name: **Public-Web-subnet-A** \>\> Availability zone: **us-east-1a** \>\> IPv4 subnet CIDR block: 192.168.1.0/24 \>\> Add new subnet \>\>
@@ -91,7 +117,9 @@
 
   
 
-* **Enabling auto-assign IP for public subnets:**
+
+# Enable Auto Assign Public IP
+
 
 
   **Public-Web-subnet-A:**
@@ -104,12 +132,16 @@
   Go to VPC \>\> Subnets \>\> Public-Web-subnet-B \>\> Actions \>\> Edit subnet settings \>\> Auto-assign IP settings: Enable \>\> Save.
 
 
-* **Internet-Gateway Creation:** Go to VPC \>\> Internet Gateways \>\> Create Internet Gateway \>\> Name tag: **3-tier-igw** \>\> Create Internet Gateway \>\> Attach to a VPC \>\> Select the **3-tier VPC** from the drop down \>\> Attach internet gateway.
+
+# Internet Gateway Creation
+ Go to VPC \>\> Internet Gateways \>\> Create Internet Gateway \>\> Name tag: **3-tier-igw** \>\> Create Internet Gateway \>\> Attach to a VPC \>\> Select the **3-tier VPC** from the drop down \>\> Attach internet gateway.
 
 
   
 
-* **NAT-Gateway Creation:** One NAT per AZ. So a total of 2 NAT gateway will be created.
+
+# NAT Gateway Creation
+ One NAT per AZ. So a total of 2 NAT gateway will be created.
 
 
   **NAT-A:**
@@ -124,7 +156,8 @@
 
   
 
-* **Route table creation and subnet association**: You will need a public route table and 3 private route tables. (1 Public RT for Web subnets, 1 private RT for NAT-A, 1 private RT for NAT-B, and 1 private RT for Db).
+
+# Route Tables and Subnet Associations: You will need a public route table and 3 private route tables. (1 Public RT for Web subnets, 1 private RT for NAT-A, 1 private RT for NAT-B, and 1 private RT for Db).
 
 
   **Public Route table**
@@ -151,7 +184,9 @@
 
   
 
-* **Security group Creation:** You need to create 4 Security Groups.
+
+# Security Group Creation
+ You need to create 4 Security Groups.
 
 
   **ALB-SG** 
@@ -174,7 +209,9 @@
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **SSM-SG** \>\> Description: **SSM-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: HTTPS \>\> Source Type: custom \>\> Source: **APP-SG** \>\> Create Security Group.
 
 
-* **IAM Role Creation:** Creating Role for SSM.
+
+# IAM Role Creation
+ Creating Role for SSM.
 
 
   Go to IAM \>\> Roles \>\> Create Role \>\> Trusted entity type: AWS service \>\> Service or use case: EC2 \>\> Use case: EC2 \>\> Next \>\> Permission Policies: **AmazonSSMManagedInstanceCore** \>\> Next \>\> Role Name: **EC2-SSM-Role** \>\> Create Role.
@@ -182,7 +219,8 @@
 
   
 
-* **SSM Endpoints creation**: Creating VPC endpoints for SSM. This allows Session manager without ssh. Creating 3 Endpoints for these services: ssm, ssmmessages, ec2messages
+
+# SSM Endpoints Creation: Creating VPC endpoints for SSM. This allows Session manager without ssh. Creating 3 Endpoints for these services: ssm, ssmmessages, ec2messages
 
 
   **ssm-Endpoint:**
@@ -211,7 +249,8 @@
 
   
 
-* **Database subnet group Creation**: Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: **database-subnet-group** \>\> Description: **3tier-database-subnet-group** \>\> VPC: **3-tier VPC** \>\> Add subnets \>\> Subnets \>\> Select subnets from drop down: "**Private-Db-subnet-A**", "**Private-Db-subnet-B**" \>\> Create.
+
+# Database Subnet Group Creation: Go to Aurora and RDS \>\> Subnet groups \>\> Create DB subnet group \>\> Name: **database-subnet-group** \>\> Description: **3tier-database-subnet-group** \>\> VPC: **3-tier VPC** \>\> Add subnets \>\> Subnets \>\> Select subnets from drop down: "**Private-Db-subnet-A**", "**Private-Db-subnet-B**" \>\> Create.
 
 
   **Note:** Although the database is deployed as a Single-AZ instance in us-east-1a, the DB subnet group includes both Private-Db-subnet-A and Private-Db-subnet-B.
@@ -219,7 +258,8 @@
   This follows AWS best practices and allows future migration to Multi-AZ deployments without redesigning the network.
 
 
-* **RDS MySQL creation**: Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
+
+# Amazon RDS MySQL Creation: Go to Aurora and RDS \>\> Databases \>\> Create Database \>\> Full configuration \>\> Engine type: MySQL \>\> Choose a database creation method: Full configuration \>\> Templates: Free tier    (Free tier gives only one database server with single AZ for free. If you select Dev/Test template or Production template option, it gives 3 options, you can select:  
 - [ ] Multi-AZ DB cluster deployment (3 instances):Creates a primary DB instance with two readable standbys in separate Availability Zones.  
 - [ ] Multi-AZ DB instance deployment (2 instances): Creates a primary DB instance with a non-readable standby instance in a separate Availability Zone.  
 - [ ] Single-AZ DB instance deployment (1 instance):Creates a single DB instance without standby instances.
@@ -238,7 +278,9 @@
   In production environments, a read replica can be created in another Availability Zone to offload read traffic from the primary database. 
 
 
-* **Secret manager Creation:** In production, we don't hardcode the database password in application. We use a secret manager to store secrets securely.
+
+# AWS Secrets Manager Creation
+ In production, we don't hardcode the database password in application. We use a secret manager to store secrets securely.
 
 
   Go to Secret manager \>\> Store a new secret \>\> Secret Type: Credentials for Amazon RDS database \>\> Credentials \>\> Username: admin \>\> Password: ASoYRxsAI9snyjZZWjG6 \>\> Encryption key: aws/secretsmanager \>\> Database: Select **usernotes**  \>\> Next \>\> Secret name: **usernotes-rds-secret** \>\> Next \>\> Configure automatic rotation: **Keep it disabled** \>\> Next \>\> Scroll down \>\> Store.
@@ -284,7 +326,8 @@
 
   
 
-* **Creating a simple Application in EC2**: Here we will add all the packages and applications and then we will create AMI for the launch template.
+
+# Creating Application EC2 Instance: Here we will add all the packages and applications and then we will create AMI for the launch template.
 
 
   Go to EC2 \>\> Launch instance \>\> Name: **Application EC2** \>\> AMI: Amazon linux 2023 \>\> Instance type: t3.micro \>\> Key pair name: Proceed without a key pair \>\> Network settings \>\> Edit \>\> VPC: **3-tier VPC** \>\> Subnet: **Private-App-subnet-A** \>\> Firewall (security groups): Select existing Security Group: **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Launch instance.
@@ -344,7 +387,8 @@
   After exiting from the database, follow the next steps below.
 
 
-* **Running the application in EC2:** 
+
+# Running the Application 
 
 
 - sudo su ec2-user  
@@ -398,22 +442,27 @@
 
   
 
-* **Create AMI**: Go to Ec2 \>\> Select the private instance you created: **Application Ec2** \>\> Actions \>\> Image and templates \>\> Create image \>\> Image name: **3tier-app-ami** \>\> Create image.
+
+# Create AMI: Go to Ec2 \>\> Select the private instance you created: **Application Ec2** \>\> Actions \>\> Image and templates \>\> Create image \>\> Image name: **3tier-app-ami** \>\> Create image.
 
 
   
 
-* **Creating Launch template:** Go to EC2 \>\> Launch templates \>\> Create launch template \>\> Launch template name: **3-tier-launch-template** \>\> AMI \>\> My AMIs \>\> **3tier-app-ami** \>\> Instance type: t3.micro \>\> Key pair: Don't include in launch template \>\> Security Group: Select Existing Security Group \>\> **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Create Launch templates.
+
+# Create Launch Template Go to EC2 \>\> Launch templates \>\> Create launch template \>\> Launch template name: **3-tier-launch-template** \>\> AMI \>\> My AMIs \>\> **3tier-app-ami** \>\> Instance type: t3.micro \>\> Key pair: Don't include in launch template \>\> Security Group: Select Existing Security Group \>\> **APP-SG** \>\> Advanced details \>\> IAM instance profile: **EC2-SSM-Role** \>\> Create Launch templates.
 
 
   
 
-* **Creating Target groups:** Go to EC2 \>\> Target groups \>\> Create target group \>\> Target type: Instances \>\> Target group name: **3-tier-target-group** \>\> Protocol: HTTP \>\> Port: 9051 \>\> IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Protocol version: HTTP1 \>\> Health checks \>\> Health check protocol: HTTP \>\>  Health check path: / \>\> Next \>\> Scroll down \>\> Next \>\> Create target group.
+
+# Create Target Group Go to EC2 \>\> Target groups \>\> Create target group \>\> Target type: Instances \>\> Target group name: **3-tier-target-group** \>\> Protocol: HTTP \>\> Port: 9051 \>\> IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Protocol version: HTTP1 \>\> Health checks \>\> Health check protocol: HTTP \>\>  Health check path: / \>\> Next \>\> Scroll down \>\> Next \>\> Create target group.
 
 
   
 
-* **Creating Application load balancer (ALB):** Go to EC2 \>\> Load balancers \>\> Create load balancer \>\> Application Load balancer \>\> Create \>\> Load balancer name: **3-tier-ALB** \>\> Scheme: Internet-facing \>\> Load balancer IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: 
+
+# Create Application Load Balancer (ALB)
+ Go to EC2 \>\> Load balancers \>\> Create load balancer \>\> Application Load balancer \>\> Create \>\> Load balancer name: **3-tier-ALB** \>\> Scheme: Internet-facing \>\> Load balancer IP address type: IPv4 \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: 
 
   us-east-1a : Public-Web-subnet-A
 
@@ -425,7 +474,8 @@
   Load balancer URL: [http://3-tier-ALB-1098534071.us-east-1.elb.amazonaws.com](http://3-tier-ALB-1098534071.us-east-1.elb.amazonaws.com)  
 
 
-* **Creating Auto scaling group**:  Go to EC2 \>\> Scroll down side bar \>\> Auto scaling groups \>\> Create Auto scaling group \>\> Auto Scaling group name: **3-tier-ASG** \>\> Launch Template: **3-tier-launch-template** \>\> Version: Latest \>\> Next \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: **Private-App-subnet-A**  and **Private-App-subnet-B** \>\> Next \>\> Select Load balancing options: Attach to an existing load balancer \>\> Select the load balancers to attach: **3-tier-target-group** \>\> Select VPC Lattice service to attach: No VPC Lattice service \>\> Health checks \>\> Additional health check types \- optional \>\> Turn on Elastic Load Balancing health checks: Enable \>\> Health check grace period: 300 Seconds \>\> Next \>\> Desired capacity: 2 \>\> Scaling \>\> Min desired capacity: 2 \>\> Max desired capacity: 4 \>\> Automatic scaling: Target tracking scaling policy \>\> Scaling policy name: **Target Tracking Policy** \>\> Metric type: Application Load balancer request count per target \>\> Target group: 3-tier-target-group \>\> Target value: 60 \>\> Instance warmup: 300 Seconds \>\> Scroll down \>\> Next \>\> Next \>\> Next \>\> Create Auto Scaling group.
+
+# Create Auto Scaling Group:  Go to EC2 \>\> Scroll down side bar \>\> Auto scaling groups \>\> Create Auto scaling group \>\> Auto Scaling group name: **3-tier-ASG** \>\> Launch Template: **3-tier-launch-template** \>\> Version: Latest \>\> Next \>\> VPC: **3-tier VPC** \>\> Availability Zones and subnets: **Private-App-subnet-A**  and **Private-App-subnet-B** \>\> Next \>\> Select Load balancing options: Attach to an existing load balancer \>\> Select the load balancers to attach: **3-tier-target-group** \>\> Select VPC Lattice service to attach: No VPC Lattice service \>\> Health checks \>\> Additional health check types \- optional \>\> Turn on Elastic Load Balancing health checks: Enable \>\> Health check grace period: 300 Seconds \>\> Next \>\> Desired capacity: 2 \>\> Scaling \>\> Min desired capacity: 2 \>\> Max desired capacity: 4 \>\> Automatic scaling: Target tracking scaling policy \>\> Scaling policy name: **Target Tracking Policy** \>\> Metric type: Application Load balancer request count per target \>\> Target group: 3-tier-target-group \>\> Target value: 60 \>\> Instance warmup: 300 Seconds \>\> Scroll down \>\> Next \>\> Next \>\> Next \>\> Create Auto Scaling group.
 
 
   
