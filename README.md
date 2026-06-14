@@ -33,7 +33,7 @@ This document provides a complete step-by-step implementation of a production-st
                                       |  
                        Application Load Balancer (ALB)  
                                       |  
-            \-------------------------------------------------  
+            +-------------------------------------------------+  
             |                                               	|  
             |                                               	|  
      Public-Web-Subnet-A                            Public-Web-Subnet-B  
@@ -41,24 +41,24 @@ This document provides a complete step-by-step implementation of a production-st
             |                                               	|  
        NAT Gateway A                                  NAT Gateway B  
             |                                               	|  
-            \-------------------------------------------------  
+            +-------------------------------------------------+  
                             		|  
                             		|  
-        \---------------------------------------------------------------  
+        +-------------------------------------------------------- 
         |                                                   		|  
         |                                                   		|  
  Private-App-Subnet-A                              Private-App-Subnet-B  
     (us-east-1a)                                      	(us-east-1b)  
         |                                                   		|  
         |                                                   		|  
-        \-------------- Auto Scaling Group \--------------------+  
+        +-------------- Auto Scaling Group ---------------------+  
                             	|  
-            \----------------------------------------  
+            +-----------------------------------+  
             |                               		|  
-       EC2 App Server                 EC2 App Server  
-          (APP-SG)                      (APP-SG)  
+       EC2 App Server                     EC2 App Server  
+          (APP-SG)                          (APP-SG)  
             |                               		|  
-            \+-----------------+------------------+  
+            +-----------------+-----------------+  
                             	|  
                      MySQL Port 3306  
                             	|  
@@ -69,8 +69,8 @@ This document provides a complete step-by-step implementation of a production-st
                     Single-AZ Instance  
                        (DB-SG)
 
-![][image1]
 ```
+<img width="1774" height="887" alt="3-tier architecture diagram" src="https://github.com/user-attachments/assets/01080a6b-ff3f-4b7a-925b-fddfdfd6bd44" />
 
 ---
 
