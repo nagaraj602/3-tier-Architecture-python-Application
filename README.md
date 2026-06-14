@@ -91,27 +91,22 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **Subnet 2:**
-
   Subnet name: **Public-Web-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.2.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 3:**
-
   Subnet name: **Private-App-subnet-A** \>\> Availability zone: **us-east-1a** \>\> IPv4 subnet CIDR block: 192.168.11.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 4:**
-
   Subnet name: **Private-App-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.12.0/24 \>\> Create Subnet.
 
 
   **Subnet 5:**
-
   Subnet name: **Private-Db-subnet-A** \>\> Availability zone: **us-east-1a** \>\> IPv4 subnet CIDR block: 192.168.21.0/24 \>\> Add new subnet \>\>
 
 
   **Subnet 6:**
-
   Subnet name: **Private-Db-subnet-B** \>\> Availability zone: **us-east-1b** \>\> IPv4 subnet CIDR block: 192.168.22.0/24 \>\> Create Subnet.
 
 
@@ -123,12 +118,10 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **Public-Web-subnet-A:**
-
   Go to VPC \>\> Subnets \>\> Public-Web-subnet-A \>\> Actions \>\> Edit subnet settings \>\> Auto-assign IP settings: Enable \>\> Save.
 
 
   **Public-Web-subnet-B:**
-
   Go to VPC \>\> Subnets \>\> Public-Web-subnet-B \>\> Actions \>\> Edit subnet settings \>\> Auto-assign IP settings: Enable \>\> Save.
 
 
@@ -145,12 +138,10 @@ This document provides a complete step-by-step implementation of a production-st
 
 
   **NAT-A:**
-
   Go to VPC \>\> NAT gateways \>\> Create NAT gateway \>\> Name: **NAT-A** \>\> Availability mode: **Zonal** \>\> Subnet: **Public-Web-subnet-A** \>\> Connectivity Type: Public \>\> Elastic IP allocation ID: Click on **Allocate Elastic IP** \>\> Create NAT gateway. (takes time to be up and running)
 
 
   **NAT-B:**
-
   Go to VPC \>\> NAT gateways \>\> Create NAT gateway \>\> Name: **NAT-B** \>\> Availability mode: **Zonal** \>\> Subnet: **Public-Web-subnet-B** \>\> Connectivity Type: Public \>\> Elastic IP allocation ID: Click on **Allocate Elastic IP** \>\> Create NAT gateway. (takes time to be up and running)
 
 
@@ -162,24 +153,20 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
 
 
   **Public Route table:**
-
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Public-RT**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: Internet Gateway \>\> Select the Internet gateway ID: **3-tier-igw** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Public-Web-subnet-A**", "**Public-Web-subnet-B**" \>\> Save associations.
 
 
-  **Private** **Route table App-RT-A:**
-
+  **Private Route table App-RT-A:**
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-App-RT-A**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: NAT Gateway \>\> Select the NAT gateway ID: **NAT-A** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-App-subnet-A**" \>\> Save associations.
 
 
   
 
-  **Private** **Route table App-RT-B:**
-
+  **Private Route table App-RT-B:**
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-App-RT-B**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> Go to Routes \>\> Edit routes \>\> Add route \>\> Destination: 0.0.0.0/0 \>\> Target: NAT Gateway \>\> Select the NAT gateway ID: **NAT-B** \>\> Save changes \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-App-subnet-B**" \>\> Save associations.
 
 
-  **Private** **DB Route table:**
-
+  **Private DB Route table:**
   Go to VPC \>\> route tables \>\> Create route table \>\> Name: **Private-DB-RT**  \>\> VPC: **3-tier VPC** \>\> Create route table \>\> No Routes attached here \>\> Go to Subnet associations \>\> Edit Subnet associations \>\> Select the subnet: "**Private-Db-subnet-A**"**,** "**Private-Db-subnet-B**" \>\> Save associations.
 
 
@@ -191,22 +178,18 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
 
 
   **ALB-SG:** 
-
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **ALB-SG** \>\> Description: **ALB-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: HTTP \>\> Source Type: Anywhere-IPv4 \>\> Create Security Group.
 
 
   **APP-SG:** 
-
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **APP-SG** \>\> Description: **APP-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: Custom TCP \>\> Port: 9051 \>\> Source Type: custom \>\> Source: **ALB-SG** \>\> Create Security Group.
 
 
   **DB-SG:** 
-
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **DB-SG** \>\> Description: **DB-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: MYSQL/Aurora \>\> Source Type: custom \>\> Source: **APP-SG** \>\> Create Security Group.
 
 
   **SSM-SG:**
-
   Go to VPC \>\> Security Groups \>\> Create Security Group  \>\>  Security Group name: **SSM-SG** \>\> Description: **SSM-SG** \>\> VPC: **3-tier VPC** \>\> **Inbound rules** \>\> **Add rule** \>\> Type: HTTPS \>\> Source Type: custom \>\> Source: **APP-SG** \>\> Create Security Group.
 
 
@@ -221,11 +204,11 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
   
 
 
-# SSM Endpoints Creation: Creating VPC endpoints for SSM. This allows Session manager without ssh. Creating 3 Endpoints for these services: ssm, ssmmessages, ec2messages
+# SSM Endpoints Creation: 
+Creating VPC endpoints for SSM. This allows Session manager without ssh. Creating 3 Endpoints for these services: ssm, ssmmessages, ec2messages
 
 
   **ssm-Endpoint:**
-
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ssm-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ssm, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ssm \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
@@ -233,7 +216,6 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
   
 
   **ssmmessages-Endpoint:**
-
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ssmmessages-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ssmmessages, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ssmmessages \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
@@ -241,7 +223,6 @@ You will need a public route table and 3 private route tables. (1 Public RT for 
   
 
   **ec2messages-Endpoint:**
-
   Go to VPC \>\> Endpoints \>\> Create Endpoint \>\> Name: **ec2messages-Endpoint** \>\> Type: AWS services \>\> Service Region \>\> Enable Cross Region endpoint: **Keep it Disabled** \>\> Services: Search for ec2messages, that it will show like this:  
   Service Name \= com.amazonaws.us-east-1.ec2messages \>\> Select that service \>\> VPC: **3-tier VPC** \>\> Additional settings \>\> Private DNS name \>\> Enable private DNS name: Enable \>\> DNS record IP type: IPv4 \>\> Subnets \>\> Under Availability Zone \>\> Select the checkbox near **us-east-1a** and **us-east-1b** \>\> Under subnet ID \>\> for us-east-1a , select **Private-App-subnet-A** \>\> for us-east-1b, select **Private-App-subnet-B** \>\> Scroll down a bit \>\> IP address type: IPv4 \>\> Security Groups \>\> Select check box for **SSM-SG** \>\> Policy: Full Access \>\> Create Endpoint.
 
