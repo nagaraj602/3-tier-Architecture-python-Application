@@ -24,7 +24,7 @@ def get_db_credentials():
 
 
 
-DB_HOST = "usernotes.cu9e4agaow6j.us-east-1.rds.amazonaws.com"
+DB_HOST = secret["host"]
 secret = get_db_credentials()
 DB_USER = secret["username"]
 DB_PASSWORD = secret["password"]
