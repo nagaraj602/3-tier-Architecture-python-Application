@@ -11,5 +11,5 @@ output "rds_endpoint" {
 }
 
 output "secret_name" {
-  value = aws_secretsmanager_secret.rds_secret.name
+  value = aws_secretsmanager_secret.rds_secret1.name
 }

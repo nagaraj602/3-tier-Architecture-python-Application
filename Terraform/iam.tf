@@ -43,7 +43,7 @@ resource "aws_iam_role_policy" "secrets_read" {
           "secretsmanager:GetSecretValue"
         ]
 
-        Resource = aws_secretsmanager_secret.rds_secret.arn
+        Resource = aws_secretsmanager_secret.rds_secret1.arn
       }
     ]
   })

@@ -13,10 +13,6 @@ resource "aws_db_subnet_group" "database_subnet_group" {
   }
 }
 
-resource "random_password" "db_password" {
-  length  = 16
-  special = true
-}
 
 resource "aws_db_instance" "usernotes" {
 
@@ -30,8 +26,8 @@ resource "aws_db_instance" "usernotes" {
   allocated_storage = 20
   storage_type      = "gp3"
 
-  username = "admin"
-  password = random_password.db_password.result
+  username = var.db_username
+  password = var.db_password
 
   db_subnet_group_name = aws_db_subnet_group.database_subnet_group.name
 
