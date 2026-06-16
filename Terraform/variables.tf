@@ -1,5 +1,5 @@
 variable "ami_id" {
-  default = "ami-080d2f9cbbab903ef"
+  default = "ami-0521cb2d60cfbb1a6"
 }
 variable "db_username" {
   description = "RDS master username"
