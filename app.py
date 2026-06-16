@@ -14,7 +14,7 @@ def get_db_credentials():
         region_name="us-east-1"
     )
     response = client.get_secret_value(
-        SecretId="usernotes-rds-secret"
+        SecretId="usernotes-rds-secret1"
     )
     secret = json.loads(
         response["SecretString"]
@@ -23,9 +23,8 @@ def get_db_credentials():
 
 
 
-
-DB_HOST = secret["host"]
 secret = get_db_credentials()
+DB_HOST = secret["host"]
 DB_USER = secret["username"]
 DB_PASSWORD = secret["password"]
 DB_NAME = "usernotes"
