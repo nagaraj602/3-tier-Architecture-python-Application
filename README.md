@@ -415,8 +415,8 @@ After=network.target
 
 [Service]
 User=ec2-user
-WorkingDirectory=/home/ec2-user/app
-ExecStart=/usr/bin/python3 /home/ec2-user/app/app.py
+WorkingDirectory=/home/ec2-user/3-tier-Architecture-python-Application
+ExecStart=/usr/bin/python3 /home/ec2-user/3-tier-Architecture-python-Application/app.py
 Restart=always
 RestartSec=5
 
